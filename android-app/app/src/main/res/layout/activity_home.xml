@@ -30,19 +30,19 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="36dp"
                     android:layout_weight="1"
-                    android:text="Digital Docs Solutions"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/logo_digitaldocs" />
 
                 <Button
                     android:id="@+id/topPortalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="42dp"
+                    android:layout_marginStart="8dp"
                     android:backgroundTint="@color/primary_blue"
                     android:minWidth="0dp"
                     android:paddingHorizontal="14dp"

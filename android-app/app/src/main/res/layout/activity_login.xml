@@ -11,13 +11,21 @@
         android:orientation="vertical"
         android:padding="24dp">
 
+        <ImageView
+            android:layout_width="220dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="28dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart"
+            android:src="@drawable/logo_digitaldocs" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="42dp"
+            android:layout_marginTop="16dp"
             android:text="Resiliner DDS"
             android:textColor="#0F172A"
-            android:textSize="34sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
         <TextView
