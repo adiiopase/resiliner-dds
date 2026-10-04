@@ -15,6 +15,36 @@ const products: Record<
       "Format texte modifiable, indexable et analysable",
     ],
   },
+  "ocr-license": {
+    name: "OCR — Licence + code source",
+    price: "4 500 € TTC / licence + sources",
+    summary: "Licence commerciale OCR réservée aux acheteurs souhaitant utiliser notre cloud avec code source inclus.",
+    features: [
+      "Licence commerciale OCR",
+      "Code source inclus",
+      "Usage cloud DDS et intégration du moteur OCR",
+    ],
+  },
+  "scan-license": {
+    name: "Scan — Licence + code source",
+    price: "4 000 € TTC / licence + sources",
+    summary: "Licence commerciale Scan destinée aux utilisateurs-acheteurs du cloud, avec sources incluses.",
+    features: [
+      "Licence commerciale Scan",
+      "Code source inclus",
+      "Capture, sécurisation et intégration cloud DDS",
+    ],
+  },
+  "ia-license": {
+    name: "IA — Licence + code source",
+    price: "3 500 € TTC / licence + sources",
+    summary: "Licence commerciale IA pour exploitation dans le cloud avec sources incluses.",
+    features: [
+      "Licence commerciale IA",
+      "Code source inclus",
+      "Modèles de classification et automatisation documentaire",
+    ],
+  },
   classification: {
     name: "Classification automatique de documents",
     price: "1 500 € TTC",

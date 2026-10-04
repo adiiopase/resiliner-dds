@@ -41,37 +41,52 @@ export default function ProduitsPage() {
           <a href="/" className="btn btn-outline-secondary me-2">
             ← Retour à l&apos;accueil
           </a>
-          <a href="/portail-dds/login" className="btn btn-primary">
+          <a href="/login?next=/dashboard" className="btn btn-primary">
             Tester la plateforme
           </a>
         </div>
       </div>
 
       <div className="row g-4">
-        {products.map((prod, index) => (
-          <div key={index} className="col-lg-4 col-md-6">
-            <div className="card h-100 shadow-sm border-0 bg-light p-4">
-              <div className="card-body d-flex flex-column">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
-                    {prod.tag}
-                  </span>
-                  <span className="badge bg-secondary">{prod.badge}</span>
-                </div>
-                <h2 className="h4 fw-bold mb-3">{prod.name}</h2>
-                <p className="text-muted flex-grow-1">{prod.description}</p>
-                <div className="mt-4">
-                  <a
-                    href="/portail-dds/login"
-                    className="btn btn-outline-primary w-100"
-                  >
-                    En savoir plus
-                  </a>
+        {products.map((prod, index) => {
+          const slugMap: Record<number, string> = {
+            0: "ocr",
+            1: "cloud",
+            2: "api",
+          };
+          const targetSlug = slugMap[index] || "ocr";
+
+          return (
+            <div key={index} className="col-lg-4 col-md-6">
+              <div className="card h-100 shadow-sm border-0 bg-light p-4 rounded-3">
+                <div className="card-body d-flex flex-column">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill">
+                      {prod.tag}
+                    </span>
+                    <span className="badge bg-secondary rounded-pill">{prod.badge}</span>
+                  </div>
+                  <h2 className="h4 fw-bold mb-3">{prod.name}</h2>
+                  <p className="text-muted flex-grow-1">{prod.description}</p>
+                  <div className="mt-4 d-flex flex-column gap-2">
+                    <a
+                      href={`/products/${targetSlug}`}
+                      className="btn btn-outline-primary w-100 font-semibold"
+                    >
+                      En savoir plus →
+                    </a>
+                    <a
+                      href="/login?next=/dashboard"
+                      className="btn btn-sm btn-light border text-secondary w-100"
+                    >
+                      Accéder dans le SaaS
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </main>
   );

@@ -69,7 +69,7 @@ export default function ServicesPage() {
           <a href="/" className="btn btn-outline-secondary me-2">
             ← Retour à l&apos;accueil
           </a>
-          <a href="/portail-dds/login" className="btn btn-primary">
+          <a href="/login?next=/dashboard" className="btn btn-primary">
             Accéder à l&apos;espace client
           </a>
         </div>
@@ -103,7 +103,7 @@ export default function ServicesPage() {
           Nos experts vous accompagnent dans l&apos;audit et la numérisation de
           votre fonds documentaire.
         </p>
-        <a href="/portail-dds/login" className="btn btn-light btn-lg font-weight-bold">
+        <a href="/devis" className="btn btn-light btn-lg font-weight-bold">
           Demander un devis / Contactez-nous
         </a>
       </section>

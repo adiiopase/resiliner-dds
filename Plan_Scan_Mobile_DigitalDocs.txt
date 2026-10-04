@@ -1,0 +1,64 @@
+================================================================================
+          DIGITALDOCS SOLUTIONS - PLAN D'EXECUTION GLOBAL (SCAN MOBILE & PRODUITS)
+================================================================================
+Date : 10 Septembre 2026
+Projet : resiliner-dds (DigitalDocs Solutions)
+Auteur : Antigravity AI Assistant
+
+--------------------------------------------------------------------------------
+1. SCAN DIRECT DEPUIS SMARTPHONE & DASHBOARD
+--------------------------------------------------------------------------------
+- L'utilisateur connecté peut lancer directement la numérisation caméra depuis 
+  son Dashboard (/dashboard) ou depuis le menu /documents/scan.
+- Capture, filtres OCR N&B et Contraste sur Canvas, recadrage et mode hors-ligne.
+- Envoi automatique et chiffré dans la base PostgreSQL et le Storage souverain.
+- Consultation immédiate dans "Mes documents" (/documents) et sur le Dashboard avec :
+    * 👁️ Visualiser (Aperçu haute résolution & détails OCR)
+    * ⬇️ Télécharger (URL signée sécurisée)
+    * 🗑️ Supprimer (Suppression physique + Remboursement immédiat du quota)
+
+--------------------------------------------------------------------------------
+2. TARIFICATION DU STOCKAGE & PAIEMENT INTERACTIF DE LICENCES
+--------------------------------------------------------------------------------
+- Affichage transparent du prix au Mo : 0,10 € TTC / Mo occupé.
+- Calcul en temps réel du coût estimé de stockage consommé.
+- Modale interactive de paiement & surclassement (/dashboard et /documents) :
+    * Option 1 : Paiement à la consommation réelle (0,10 € / Mo)
+    * Option 2 : Licence Mensuelle Pro (9,90 € / mois - 50 Mo inclus + OCR Illimité)
+    * Option 3 : Licence Annuelle Entreprise (99,00 € / an - 1 Go inclus + 2 mois offerts)
+- Règle spécifique de dépassement : 
+    * SEULS les scans mobiles sont autorisés à dépasser la limite de 2 Mo.
+    * Les uploads classiques de fichiers volumineux restent régulés.
+
+--------------------------------------------------------------------------------
+3. REORGANISATION DE LA TABLE PRODUCTS & CHARGEMENT DYNAMIQUE
+--------------------------------------------------------------------------------
+- Migration SQL (supabase/migrations/202609100001_reorganize_products_and_storage_plans.sql)
+  pour la table "products" avec les catégories et forfaits réorganisés :
+    1. STORAGE_MB : Recharge Stockage Souverain (au Mo) - 0,10 € / Mo
+    2. STORAGE_MONTHLY : Licence Mensuelle Stockage & Scan Pro - 9,90 € / mois
+    3. STORAGE_YEARLY : Licence Annuelle Stockage & Scan Illimité - 99,00 € / an
+    4. MOBILE_SCAN : Application mobile de scan sur site - 2 000 € TTC
+    5. OCR : Reconnaissance optique de texte - 2 500 € TTC (0,05 € HT / page)
+    6. CLASSIFICATION : IA de classification de documents - 1 500 € TTC
+    7. CLOUD : Stockage Cloud Souverain & Chiffré - 3 500 € TTC (10 € HT / Go)
+    8. API : Connecteurs API REST d'intégration - 4 000 € TTC
+    9. ETATICIEL_GLOBAL : Suite globale État civil - 6 000 € TTC
+    10. ETATICIEL_NAISSANCE : Logiciel Naissance - 3 000 € TTC
+    11. ETATICIEL_DECES : Logiciel Décès - 3 000 € TTC
+    12. ETATICIEL_MARIAGE : Logiciel Mariage - 3 000 € TTC
+
+- Chargement DYNAMIQUE de la table products dans toute l'application :
+    * Bon de commande (/commande) : liste déroulante 100% dynamique avec mise à jour 
+      automatique des prix, unités et quantités minimales.
+    * Demande de devis (/devis) : liste dynamique liée aux produits actifs.
+    * Catalogue (/nos-produits) : filtrage par onglets de catégories dynamique.
+    * Grille tarifaire (/pricing) : rendu dynamique synchronisé.
+
+--------------------------------------------------------------------------------
+4. VALIDATION & TESTS DE BUILD
+--------------------------------------------------------------------------------
+- Next.js 16.3.4 (Turbopack) : Compilation réussie (Code 0)
+- Vérification TypeScript : 0 erreur
+- Toutes les 29 routes statiques et dynamiques sont opérationnelles.
+================================================================================

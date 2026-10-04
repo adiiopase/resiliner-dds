@@ -17,13 +17,19 @@ type Invoice = {
   total_ttc_cents: number;
   status: "draft" | "sent" | "paid" | "cancelled";
   due_date: string | null;
+  created_at: string;
+  source?: string | null;
+  customer_confirmed?: boolean;
+  validated_by_admin?: boolean;
 };
 
-function statusLabel(status: Invoice["status"]) {
-  if (status === "paid") return "Payée";
+function statusLabel(status: Invoice["status"], validated?: boolean) {
+  if (status === "paid") {
+    return validated ? "✓ Validée & Payée" : "Payée";
+  }
   if (status === "cancelled") return "Annulée";
   if (status === "draft") return "En cours";
-  return "Non payée";
+  return "À régler";
 }
 
 function BillingContent() {
@@ -38,10 +44,10 @@ function BillingContent() {
   const payment = searchParams.get("payment");
   const paymentMessage =
     payment === "success"
-      ? "Paiement transmis. La facture sera marquée comme payée après confirmation."
+      ? "✓ Paiement Stripe validé avec succès ! Votre facture est confirmée et validée par l'administrateur."
       : payment === "cancelled"
-        ? "Paiement abandonné. Vous pourrez réessayer depuis cette facture."
-        : "";
+      ? "Paiement abandonné. Vous pouvez réessayer directement depuis la liste de vos factures ci-dessous."
+      : "";
 
   useEffect(() => {
     async function loadInvoices() {
@@ -51,7 +57,7 @@ function BillingContent() {
       const { data, error } = await supabase
         .from("invoices")
         .select(
-          "id, invoice_number, order_number, description, product, quantity, quantity_unit, amount_ht_cents, vat_rate, total_ttc_cents, status, due_date"
+          "id, invoice_number, order_number, description, product, quantity, quantity_unit, amount_ht_cents, vat_rate, total_ttc_cents, status, due_date, created_at, source, customer_confirmed, validated_by_admin"
         )
         .order("created_at", { ascending: false });
 
@@ -93,98 +99,129 @@ function BillingContent() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Espace client</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">Mes factures</h1>
-        <p className="mt-2 text-slate-600">Retrouvez vos factures et leur état de paiement.</p>
+    <div className="space-y-6 max-w-6xl mx-auto pb-16">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-blue-600">Espace Financier Souverain</p>
+          <h1 className="mt-1 text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2">
+            <span>💳</span> Mes Factures & Règlements
+          </h1>
+          <p className="mt-1 text-xs text-slate-500">
+            Retrouvez l&apos;historique de vos factures, scans numériques et validation des paiements Stripe.
+          </p>
+        </div>
       </div>
 
       {(message || paymentMessage) && (
-        <p className="rounded-lg bg-blue-50 p-4 text-sm text-blue-900">
-          {message || paymentMessage}
-        </p>
+        <div
+          className={`rounded-2xl p-4 text-xs font-semibold flex items-center gap-2 ${
+            payment === "success"
+              ? "bg-emerald-50 text-emerald-900 border border-emerald-200"
+              : "bg-blue-50 text-blue-900 border border-blue-200"
+          }`}
+        >
+          <span>{payment === "success" ? "✅" : "ℹ️"}</span>
+          <span>{message || paymentMessage}</span>
+        </div>
       )}
 
       {loading ? (
-        <p className="text-slate-600">Chargement des factures...</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-xs text-slate-500">
+          Chargement de vos factures en cours...
+        </div>
       ) : invoices.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-          <h2 className="text-xl font-bold text-slate-900">Aucune facture disponible</h2>
-          <p className="mt-2 text-slate-600">Vous n&apos;avez encore aucune facture associée à votre compte.</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center space-y-3 shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl text-slate-500">
+            📄
+          </div>
+          <h2 className="text-lg font-bold text-slate-900">Aucune facture disponible</h2>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            Vous n&apos;avez encore aucune facture émise. Vos scans et commandes apparaîtront automatiquement ici.
+          </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b bg-slate-50 text-slate-700">
+        <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <table className="w-full text-left text-xs">
+            <thead className="border-b bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
               <tr>
-                <th className="p-4">Facture</th>
-                <th className="p-4">Bon de commande</th>
-                <th className="p-4">Produit</th>
-                <th className="p-4">Quantité</th>
+                <th className="p-4">N° Facture</th>
+                <th className="p-4">Désignation & Produit</th>
+                <th className="p-4">Quantité / Volume</th>
                 <th className="p-4">Total TTC</th>
-                <th className="p-4">TVA</th>
-                <th className="p-4">Échéance</th>
-                <th className="p-4">Statut</th>
-                <th className="p-4">Action</th>
+                <th className="p-4">Date</th>
+                <th className="p-4">Statut & Validation</th>
+                <th className="p-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {invoices.map((invoice) => {
+                const isPaid = invoice.status === "paid";
                 const canPay =
                   !isManager &&
-                  invoice.status !== "paid" &&
+                  !isPaid &&
                   invoice.status !== "cancelled" &&
                   !hiddenIds.includes(invoice.id);
 
                 return (
-                  <tr key={invoice.id} className="border-b last:border-0 hover:bg-slate-50">
-                    <td className="p-4 font-semibold text-slate-900">{invoice.invoice_number}</td>
-                    <td className="p-4 text-emerald-700">
-                      {invoice.order_number ?? "Bon de commande"}
+                  <tr key={invoice.id} className="hover:bg-slate-50/80 transition">
+                    <td className="p-4 font-mono font-bold text-blue-700">
+                      {invoice.invoice_number}
+                      {invoice.source === "mobile-scan" && (
+                        <span className="ml-2 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-800">
+                          Scan
+                        </span>
+                      )}
                     </td>
-                    <td className="p-4">{invoice.product ?? invoice.description}</td>
-                    <td className="p-4">
-                      {invoice.quantity ? `${invoice.quantity} ${invoice.quantity_unit ?? ""}` : "-"}
+                    <td className="p-4 max-w-[240px]">
+                      <p className="font-bold text-slate-900 truncate">
+                        {invoice.product ?? invoice.description}
+                      </p>
+                      <p className="text-[11px] text-slate-500 truncate">{invoice.description}</p>
                     </td>
-                    <td className="p-4 font-semibold text-slate-900">
+                    <td className="p-4 text-slate-700 font-medium">
+                      {invoice.quantity ? `${invoice.quantity} ${invoice.quantity_unit ?? "Mo"}` : "1 unité"}
+                    </td>
+                    <td className="p-4 font-black text-slate-900 text-sm">
                       {((invoice.total_ttc_cents || 0) / 100).toFixed(2)} €
                     </td>
-                    <td className="p-4">{invoice.vat_rate}%</td>
-                    <td className="p-4">
-                      {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString("fr-FR") : "-"}
+                    <td className="p-4 text-slate-500">
+                      {new Date(invoice.created_at || invoice.due_date || Date.now()).toLocaleDateString("fr-FR")}
                     </td>
                     <td className="p-4">
                       <span
-                        className={`rounded px-2 py-1 text-xs font-semibold ${invoice.status === "paid"
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                          isPaid
                             ? "bg-emerald-100 text-emerald-800"
                             : invoice.status === "cancelled"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-amber-100 text-amber-800"
-                          }`}
+                            ? "bg-red-100 text-red-800"
+                            : "bg-amber-100 text-amber-800"
+                        }`}
                       >
-                        {statusLabel(invoice.status)}
+                        <span>{isPaid ? "✓" : "⏳"}</span>
+                        {statusLabel(invoice.status, invoice.validated_by_admin)}
                       </span>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 text-right">
                       {canPay ? (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex justify-end gap-1.5">
                           <button
                             onClick={() => payInvoice(invoice.id)}
                             disabled={payingId !== null}
-                            className="rounded-lg bg-blue-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-800 disabled:opacity-60 transition"
+                            className="rounded-xl bg-blue-700 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-800 disabled:opacity-60 transition"
                           >
-                            {payingId === invoice.id ? "Ouverture..." : "Payer"}
+                            {payingId === invoice.id ? "Stripe..." : "Payer (Stripe)"}
                           </button>
                           <button
                             onClick={() => hidePaymentAction(invoice.id)}
-                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                            className="rounded-xl border border-slate-300 px-2.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"
                           >
                             Masquer
                           </button>
                         </div>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                          Confirmée
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -200,10 +237,8 @@ function BillingContent() {
 
 export default function BillingPage() {
   return (
-    <Suspense fallback={<p className="text-slate-600">Chargement des factures...</p>}>
+    <Suspense fallback={<p className="text-slate-600 p-8 text-center text-xs">Chargement des factures...</p>}>
       <BillingContent />
     </Suspense>
   );
 }
-
-

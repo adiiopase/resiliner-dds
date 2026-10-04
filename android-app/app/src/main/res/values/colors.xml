@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="primary_blue">#2563EB</color>
+    <color name="primary_blue_dark">#1D4ED8</color>
+    <color name="primary_blue_light">#DBEAFE</color>
+    <color name="dark_blue">#0F172A</color>
+    <color name="dark_blue_surface">#1E293B</color>
+    <color name="slate_900">#0F172A</color>
+    <color name="slate_800">#1E293B</color>
+    <color name="slate_700">#334155</color>
+    <color name="slate_600">#475569</color>
+    <color name="slate_500">#64748B</color>
+    <color name="slate_400">#94A3B8</color>
+    <color name="slate_300">#CBD5E1</color>
+    <color name="slate_200">#E2E8F0</color>
+    <color name="slate_100">#F1F5F9</color>
+    <color name="slate_50">#F8FAFC</color>
+    <color name="soft_gray">#F8FAFC</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="panel_bg">#EAF2FF</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#475569</color>
+    <color name="text_muted">#64748B</color>
+    <color name="success_green">#10B981</color>
+    <color name="success_green_bg">#ECFDF5</color>
+    <color name="danger_red">#EF4444</color>
+    <color name="danger_red_bg">#FEF2F2</color>
+    <color name="amber_gold">#F59E0B</color>
+    <color name="amber_gold_bg">#FFFBEB</color>
+    <color name="indigo_600">#4F46E5</color>
+    <color name="indigo_50">#EEF2FF</color>
+    <color name="cyan_600">#0891B2</color>
+    <color name="cyan_50">#ECFEFF</color>
+</resources>

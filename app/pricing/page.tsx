@@ -2,23 +2,19 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { fetchDynamicProducts, ProductItem, FALLBACK_PRODUCTS } from "@/lib/products";
 
 export default function PricingPage() {
-  const [products, setProducts] = useState<
-    { product_code: string; name: string; description?: string; price?: string; price_per_page?: number }[]
-  >([]);
+  const [products, setProducts] = useState<ProductItem[]>(FALLBACK_PRODUCTS);
 
   useEffect(() => {
     async function loadProducts() {
-      const { data, error } = await supabase
-        .from("products")
-        .select("product_code, name, description, price, price_per_page");
-      if (!error && data) {
+      const data = await fetchDynamicProducts();
+      if (data && data.length > 0) {
         setProducts(data);
       }
     }
-    loadProducts();
+    void loadProducts();
   }, []);
 
   return (
@@ -28,12 +24,12 @@ export default function PricingPage() {
           <Link href="/" className="text-sm font-semibold text-blue-700 hover:underline">
             ← Retour au site Digital Docs Solutions
           </Link>
-          <a
+          <Link
             href="/dashboard"
             className="text-sm font-semibold text-slate-700 hover:text-blue-700"
           >
             Aller au Dashboard →
-          </a>
+          </Link>
         </div>
 
         <div className="mt-10 max-w-2xl">
@@ -42,53 +38,63 @@ export default function PricingPage() {
             Choisissez les services utiles à votre activité.
           </h1>
           <p className="mt-4 text-lg text-slate-600">
-            Des prix simples, calculés selon votre consommation réelle. Les montants sont affichés TTC.
+            Des prix simples et transparents, calculés selon votre consommation réelle ou par licences souveraines.
           </p>
         </div>
 
         <div className="mt-8 flex flex-wrap items-center gap-4">
-          <a
+          <Link
             href="/billing"
-            className="rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 transition"
+            className="rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 transition shadow-sm"
           >
             Voir mes factures
-          </a>
-          <a
+          </Link>
+          <Link
             href="/commande"
-            className="rounded-lg border border-blue-700 px-5 py-3 font-semibold text-blue-700 hover:bg-blue-50 transition"
+            className="rounded-xl border border-blue-700 px-5 py-3 font-semibold text-blue-700 hover:bg-blue-50 transition"
           >
             Créer un bon de commande
-          </a>
+          </Link>
         </div>
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
             <article
-              key={product.product_code}
-              className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between"
+              key={product.id}
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition"
             >
               <div>
-                <h2 className="text-xl font-bold text-slate-900">{product.name}</h2>
-                <p className="mt-4 text-2xl font-bold text-blue-700">
-                  {product.price_per_page
-                    ? `${product.price_per_page} € / page`
-                    : product.price ?? "Prix à définir"}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+                    {product.category}
+                  </span>
+                  {product.badge && (
+                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                      {product.badge}
+                    </span>
+                  )}
+                </div>
+
+                <h2 className="mt-2 text-xl font-bold text-slate-900">{product.name}</h2>
+                <p className="mt-3 text-2xl font-black text-blue-700">
+                  {product.price}
                 </p>
-                <p className="mt-4 text-sm text-slate-600">{product.description}</p>
+                <p className="mt-3 text-xs text-slate-600 leading-relaxed">{product.description}</p>
               </div>
+
               <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-                <a
-                  href={`/products/${product.product_code}`}
-                  className="font-semibold text-sm text-blue-700 hover:underline"
+                <Link
+                  href={`/commande?product=${product.id}`}
+                  className="font-semibold text-xs text-blue-700 hover:underline"
                 >
-                  Découvrir le service →
-                </a>
-                <a
-                  href="/devis"
+                  Commander →
+                </Link>
+                <Link
+                  href={`/devis?product=${product.id}`}
                   className="text-xs text-slate-500 hover:text-slate-900"
                 >
-                  Devis
-                </a>
+                  Devis sur mesure
+                </Link>
               </div>
             </article>
           ))}

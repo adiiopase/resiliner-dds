@@ -12,7 +12,13 @@ export default function UserNavigation() {
   useEffect(() => {
     async function loadRole() {
       const { data } = await supabase.auth.getUser();
-      setIsManager(data.user?.app_metadata?.role === "manager");
+      const email = data.user?.email?.toLowerCase();
+      setIsManager(Boolean(
+        data.user &&
+          (data.user.app_metadata?.role === "manager" ||
+            email === "adiiopase@gmail.com" ||
+            email === "adiopa@yahoo.fr"),
+      ));
     }
 
     void loadRole();
@@ -42,13 +48,25 @@ export default function UserNavigation() {
         <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
           Documents
         </p>
-        <Link href="/documents/upload" className={linkClass("/documents/upload")}>
-          <span className="text-base">📤</span>
-          <span>Upload fichier</span>
+        <Link href="/documents/scan" className={linkClass("/documents/scan")}>
+          <span className="text-base">📱</span>
+          <span>Scanner mobile</span>
+        </Link>
+        <Link href="/documents/ocr" className={linkClass("/documents/ocr")}>
+          <span className="text-base">🔍</span>
+          <span>Studio OCR & Extraction</span>
         </Link>
         <Link href="/documents" className={linkClass("/documents")}>
           <span className="text-base">📁</span>
           <span>Mes documents</span>
+        </Link>
+        <Link href="/cloud-vault" className={linkClass("/cloud-vault")}>
+          <span className="text-base">🔒</span>
+          <span>Cloud ON / Anti-Chambre / OFF</span>
+        </Link>
+        <Link href="/documents/upload" className={linkClass("/documents/upload")}>
+          <span className="text-base">📤</span>
+          <span>Upload fichier</span>
         </Link>
       </div>
 
@@ -60,6 +78,10 @@ export default function UserNavigation() {
         <Link href="/nos-produits" className={linkClass("/nos-produits")}>
           <span className="text-base">📦</span>
           <span>Nos produits</span>
+        </Link>
+        <Link href="/api-docs" className={linkClass("/api-docs")}>
+          <span className="text-base">⚡</span>
+          <span>API Souveraine</span>
         </Link>
         <Link href="/pricing" className={linkClass("/pricing")}>
           <span className="text-base">🏷️</span>
@@ -92,6 +114,10 @@ export default function UserNavigation() {
           <Link href="/users" className={linkClass("/users")}>
             <span className="text-base">👥</span>
             <span>Utilisateurs</span>
+          </Link>
+          <Link href="/users#carousel-banners" className={linkClass("/users#carousel-banners")}>
+            <span className="text-base">🖼️</span>
+            <span>Bannières d’accueil</span>
           </Link>
         </div>
       )}

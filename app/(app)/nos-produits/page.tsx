@@ -1,83 +1,141 @@
-const products = [
-  {
-    name: "OCR (Optical Character Recognition)",
-    description: "Lisez automatiquement le texte présent dans une image et transformez-le en texte modifiable, recherchable ou analysable.",
-    details: ["Factures, scans et PDF", "Texte modifiable et recherchable", "Prix moyen TTC : 2 500 €"],
-  },
-  {
-    name: "Classification automatique de documents",
-    description: "Analysez vos PDF, images, e-mails et scans pour déterminer automatiquement leur type.",
-    details: ["Factures, contrats et pièces d'identité", "Bons de livraison et dossiers clients", "Prix moyen TTC : 1 500 €"],
-  },
-  {
-    name: "Cloud sécurisé",
-    description: "Stockez vos données en ligne avec chiffrement, conformité RGPD et infrastructure sécurisée.",
-    details: ["Chiffrement des données et transferts", "Stockage redondant", "Prix moyen TTC : 3 500 €"],
-  },
-  {
-    name: "API (Application Programming Interface)",
-    description: "Faites communiquer automatiquement Digital Docs Solutions avec vos autres logiciels.",
-    details: ["ERP, CRM et GED", "Envoi et récupération des données", "Prix moyen TTC : 4 000 €"],
-  },
-  {
-    name: "Application mobile de scan sur site",
-    description: "Capturez vos documents sur le terrain et envoyez-les vers l'OCR, l'IA et le cloud sécurisé.",
-    details: ["Capture caméra et correction automatique", "Redressement, contraste et découpe", "Prix moyen TTC : 2 000 €"],
-  },
-  {
-    name: "ETATICIEL GLOBAL",
-    description: "Solution globale de numérisation, gestion et archivage des données d'état civil.",
-    details: ["Naissance, décès et mariage", "Gestion centralisée pour la collectivité", "Licence globale : 6 000 €"],
-  },
-  {
-    name: "ETATICIEL Naissance",
-    description: "Logiciel dédié à la numérisation et à l'archivage des données de naissance.",
-    details: ["Saisie et recherche des actes", "Archivage des données de naissance", "Licence unitaire : 3 000 €"],
-  },
-  {
-    name: "ETATICIEL Décès",
-    description: "Logiciel dédié à la numérisation et à l'archivage des données de décès.",
-    details: ["Saisie et recherche des actes", "Archivage des données de décès", "Licence unitaire : 3 000 €"],
-  },
-  {
-    name: "ETATICIEL Mariage",
-    description: "Logiciel dédié à la numérisation et à l'archivage des données de mariage.",
-    details: ["Saisie et recherche des actes", "Archivage des données de mariage", "Licence unitaire : 3 000 €"],
-  },
-];
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { fetchDynamicProducts, ProductItem, FALLBACK_PRODUCTS } from "@/lib/products";
 
 export default function NosProduitsPage() {
+  const [products, setProducts] = useState<ProductItem[]>(FALLBACK_PRODUCTS);
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+
+  useEffect(() => {
+    async function loadData() {
+      const dynamicList = await fetchDynamicProducts();
+      if (dynamicList && dynamicList.length > 0) {
+        setProducts(dynamicList);
+      }
+    }
+    void loadData();
+  }, []);
+
+  const categories = ["all", ...Array.from(new Set(products.map((p) => p.category)))];
+
+  const filteredProducts = products.filter((p) => {
+    if (activeCategory === "all") return true;
+    return p.category === activeCategory;
+  });
+
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Notre offre</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Notre offre souveraine</p>
         <h1 className="mt-2 text-3xl font-bold text-slate-900">Nos produits & solutions</h1>
         <p className="mt-2 max-w-2xl text-slate-600">
-          Une chaîne complète : capture, OCR, IA, cloud sécurisé, état civil et intégration à votre système d&apos;information.
+          Une suite complète et intégrée : scan mobile, stockage souverain chiffré, OCR, IA de classification, état civil et API REST.
         </p>
       </div>
 
+      {/* Highlight Mobile & API Banner */}
+      <div className="rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 p-6 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-1">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/30 px-3 py-1 text-xs font-semibold text-blue-200">
+            <span>📱</span> Nouveauté Mobile-First
+          </span>
+          <h2 className="text-xl font-bold">Studio de Scan Mobile & Forfaits Stockage</h2>
+          <p className="text-xs text-slate-300 max-w-xl">
+            Numérisez vos documents papier en mobilité depuis smartphone avec nos filtres OCR et dépassement de quota autorisé.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2.5">
+          <Link
+            href="/documents/scan"
+            className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-500 transition shadow-sm"
+          >
+            Tester le Scanner Mobile →
+          </Link>
+          <Link
+            href="/api-docs"
+            className="rounded-xl bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition backdrop-blur-sm"
+          >
+            Documentation API REST
+          </Link>
+        </div>
+      </div>
+
+      {/* Category Tabs Filter */}
+      <div className="flex flex-wrap gap-2">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`rounded-xl px-4 py-2 text-xs font-semibold transition ${
+              activeCategory === cat
+                ? "bg-blue-700 text-white shadow-sm"
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            {cat === "all" ? "Tous les produits" : cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Product Cards Grid */}
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {products.map((product) => (
-          <article key={product.name} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+        {filteredProducts.map((product) => (
+          <article
+            key={product.id}
+            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition"
+          >
             <div>
-              <h2 className="text-xl font-bold text-slate-900">{product.name}</h2>
-              <p className="mt-3 text-slate-600 text-sm">{product.description}</p>
-              <ul className="mt-5 space-y-2 text-sm text-slate-700">
-                {product.details.map((detail) => (
-                  <li key={detail} className="flex items-center gap-2">
-                    <span className="text-blue-600">✓</span> {detail}
-                  </li>
-                ))}
-              </ul>
+              <div className="flex items-start justify-between gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+                  {product.category}
+                </span>
+                {product.badge && (
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                    {product.badge}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="mt-2 text-xl font-bold text-slate-900">{product.name}</h2>
+              <p className="mt-2 font-bold text-blue-700 text-sm">{product.price}</p>
+              <p className="mt-3 text-slate-600 text-xs leading-relaxed">{product.description}</p>
+
+              {product.details && product.details.length > 0 && (
+                <ul className="mt-4 space-y-1.5 text-xs text-slate-700">
+                  {product.details.map((detail, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <span className="text-blue-600 font-bold">✓</span> {detail}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
+
             <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <a href="/commande" className="text-sm font-semibold text-blue-700 hover:underline">
-                Commander
-              </a>
-              <a href="/devis" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                Devis sur mesure →
-              </a>
+              {product.id === "mobile-scan" ? (
+                <Link href="/documents/scan" className="text-xs font-bold text-blue-700 hover:underline">
+                  Ouvrir le scanner →
+                </Link>
+              ) : product.id === "api" ? (
+                <Link href="/api-docs" className="text-xs font-bold text-blue-700 hover:underline">
+                  Voir l&apos;API REST →
+                </Link>
+              ) : (
+                <Link
+                  href={`/commande?product=${product.id}`}
+                  className="text-xs font-bold text-blue-700 hover:underline"
+                >
+                  Commander ce produit →
+                </Link>
+              )}
+              <Link
+                href={`/devis?product=${product.id}`}
+                className="text-xs font-medium text-slate-500 hover:text-slate-900"
+              >
+                Devis sur mesure
+              </Link>
             </div>
           </article>
         ))}

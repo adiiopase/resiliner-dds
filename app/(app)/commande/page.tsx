@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
+import { fetchDynamicProducts, ProductItem, FALLBACK_PRODUCTS } from "@/lib/products";
+
 type OrderRequest = {
   id: string;
   user_id: string;
@@ -19,114 +21,6 @@ type OrderRequest = {
   created_at: string;
 };
 
-type ProductItem = {
-  id: string;
-  name: string;
-  category: string;
-  defaultUnit: string;
-  unitPriceHt: number;
-  isVolumeBased: boolean;
-  minQuantity: number;
-  description: string;
-  badge?: string;
-};
-
-const PRODUCTS_CATALOG: ProductItem[] = [
-  {
-    id: "ocr",
-    name: "OCR (Optical Character Recognition)",
-    category: "Capture & Numérisation",
-    defaultUnit: "pages",
-    unitPriceHt: 0.05,
-    isVolumeBased: true,
-    minQuantity: 500,
-    description: "Reconnaissance optique du texte haute précision, extraction de métadonnées et indexation.",
-    badge: "Populaire",
-  },
-  {
-    id: "classification",
-    name: "Classification automatique de documents",
-    category: "Intelligence Artificielle",
-    defaultUnit: "pages",
-    unitPriceHt: 0.03,
-    isVolumeBased: true,
-    minQuantity: 500,
-    description: "IA d'analyse et de classement automatique pour PDF, scans, contrats et factures.",
-    badge: "IA",
-  },
-  {
-    id: "cloud",
-    name: "Cloud sécurisé & Souverain",
-    category: "Infrastructure & Hébergement",
-    defaultUnit: "Go",
-    unitPriceHt: 10,
-    isVolumeBased: true,
-    minQuantity: 50,
-    description: "Stockage cloud chiffré de bout en bout, conformité RGPD, haute disponibilité et archivage légal.",
-  },
-  {
-    id: "api",
-    name: "API (Application Programming Interface)",
-    category: "Intégration Systèmes",
-    defaultUnit: "licences",
-    unitPriceHt: 3333.33,
-    isVolumeBased: false,
-    minQuantity: 1,
-    description: "Connecteurs API sécurisés pour intégration directe dans vos ERP, CRM et GED existants.",
-  },
-  {
-    id: "mobile-scan",
-    name: "Application mobile de scan sur site",
-    category: "Mobilité & Terrain",
-    defaultUnit: "postes",
-    unitPriceHt: 1666.67,
-    isVolumeBased: false,
-    minQuantity: 1,
-    description: "Application mobile intelligente pour numériser et téléverser des documents depuis le terrain.",
-  },
-  {
-    id: "etaticiel-global",
-    name: "ETATICIEL GLOBAL",
-    category: "Suite État Civil",
-    defaultUnit: "licences",
-    unitPriceHt: 5000,
-    isVolumeBased: false,
-    minQuantity: 1,
-    description: "Solution complète de numérisation, gestion et archivage des registres d'état civil (tous actes).",
-    badge: "Complet",
-  },
-  {
-    id: "etaticiel-naissance",
-    name: "ETATICIEL Naissance",
-    category: "Suite État Civil",
-    defaultUnit: "licences",
-    unitPriceHt: 2500,
-    isVolumeBased: false,
-    minQuantity: 1,
-    description: "Module dédié à la gestion, recherche et délivrance des actes de naissance.",
-  },
-  {
-    id: "etaticiel-deces",
-    name: "ETATICIEL Décès",
-    category: "Suite État Civil",
-    defaultUnit: "licences",
-    unitPriceHt: 2500,
-    isVolumeBased: false,
-    minQuantity: 1,
-    description: "Module dédié à la gestion, recherche et délivrance des actes de décès.",
-  },
-  {
-    id: "etaticiel-mariage",
-    name: "ETATICIEL Mariage",
-    category: "Suite État Civil",
-    defaultUnit: "licences",
-    unitPriceHt: 2500,
-    isVolumeBased: false,
-    minQuantity: 1,
-    description: "Module dédié à la gestion, recherche et délivrance des actes de mariage.",
-  },
-];
-
 function generateOrderNumber(): string {
   const year = new Date().getFullYear();
   const randomSuffix = Math.floor(10000 + Math.random() * 90000);
@@ -137,6 +31,7 @@ function BonDeCommandeContent() {
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
 
+  const [productsCatalog, setProductsCatalog] = useState<ProductItem[]>(FALLBACK_PRODUCTS);
   const [activeTab, setActiveTab] = useState<"create" | "history">("create");
   const [currentUser, setCurrentUser] = useState<{ id: string; email?: string } | null>(null);
   const [isManager, setIsManager] = useState(false);
@@ -145,9 +40,9 @@ function BonDeCommandeContent() {
   // Form State
   const [orderNumber, setOrderNumber] = useState(generateOrderNumber());
   const [company, setCompany] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState<string>(PRODUCTS_CATALOG[0].name);
-  const [quantity, setQuantity] = useState<number | string>(PRODUCTS_CATALOG[0].minQuantity);
-  const [quantityUnit, setQuantityUnit] = useState<string>(PRODUCTS_CATALOG[0].defaultUnit);
+  const [selectedProduct, setSelectedProduct] = useState<string>(FALLBACK_PRODUCTS[0].name);
+  const [quantity, setQuantity] = useState<number | string>(FALLBACK_PRODUCTS[0].min_quantity);
+  const [quantityUnit, setQuantityUnit] = useState<string>(FALLBACK_PRODUCTS[0].default_unit);
   const [message, setMessage] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
 
@@ -165,10 +60,16 @@ function BonDeCommandeContent() {
   // Printable document preview modal
   const [previewOrder, setPreviewOrder] = useState<OrderRequest | null>(null);
 
-  // 1. Initial Load & Auth
+  // 1. Initial Load & Dynamic Products & Auth
   useEffect(() => {
     async function init() {
       try {
+        // Load dynamic products from Supabase products table
+        const loadedProducts = await fetchDynamicProducts();
+        if (loadedProducts && loadedProducts.length > 0) {
+          setProductsCatalog(loadedProducts);
+        }
+
         const { data: authData } = await supabase.auth.getUser();
         if (authData.user) {
           setCurrentUser({
@@ -201,19 +102,20 @@ function BonDeCommandeContent() {
   // 2. Handle URL Search Params for Preselecting Product
   useEffect(() => {
     const productParam = searchParams.get("product");
-    if (productParam) {
-      const matched = PRODUCTS_CATALOG.find(
+    if (productParam && productsCatalog.length > 0) {
+      const matched = productsCatalog.find(
         (p) =>
           p.id.toLowerCase() === productParam.toLowerCase() ||
+          p.product_code.toLowerCase() === productParam.toLowerCase() ||
           p.name.toLowerCase().includes(productParam.toLowerCase())
       );
       if (matched) {
         setSelectedProduct(matched.name);
-        setQuantity(matched.minQuantity);
-        setQuantityUnit(matched.defaultUnit);
+        setQuantity(matched.min_quantity);
+        setQuantityUnit(matched.default_unit);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, productsCatalog]);
 
   // 3. Load Orders List
   async function loadOrders() {
@@ -245,19 +147,19 @@ function BonDeCommandeContent() {
   // 4. Update quantity unit when product changes
   const handleProductChange = (prodName: string) => {
     setSelectedProduct(prodName);
-    const prod = PRODUCTS_CATALOG.find((p) => p.name === prodName);
+    const prod = productsCatalog.find((p) => p.name === prodName);
     if (prod) {
-      setQuantityUnit(prod.defaultUnit);
-      if (Number(quantity) < prod.minQuantity || !quantity) {
-        setQuantity(prod.minQuantity);
+      setQuantityUnit(prod.default_unit);
+      if (Number(quantity) < prod.min_quantity || !quantity) {
+        setQuantity(prod.min_quantity);
       }
     }
   };
 
   // 5. Price Calculations
-  const currentProductObj = PRODUCTS_CATALOG.find((p) => p.name === selectedProduct);
+  const currentProductObj = productsCatalog.find((p) => p.name === selectedProduct);
   const parsedQty = typeof quantity === "number" ? quantity : parseFloat(quantity) || 0;
-  const unitPrice = currentProductObj ? currentProductObj.unitPriceHt : 0;
+  const unitPrice = currentProductObj ? currentProductObj.unit_price_ht : 0;
   const estimatedTotalHt = parsedQty * unitPrice;
   const tvaAmount = estimatedTotalHt * 0.2;
   const estimatedTotalTtc = estimatedTotalHt + tvaAmount;
@@ -583,9 +485,9 @@ function BonDeCommandeContent() {
                     required
                     className="w-full rounded-xl border border-slate-300 px-3.5 py-3 text-sm font-medium bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition appearance-none cursor-pointer"
                   >
-                    {PRODUCTS_CATALOG.map((p) => (
+                    {productsCatalog.map((p) => (
                       <option key={p.id} value={p.name}>
-                        {p.name} — {p.category}
+                        {p.name} — {p.category} {p.badge ? `(${p.badge})` : ""}
                       </option>
                     ))}
                   </select>
@@ -610,7 +512,7 @@ function BonDeCommandeContent() {
                   <div className="relative">
                     <input
                       type="number"
-                      min={currentProductObj?.minQuantity || 1}
+                      min={currentProductObj?.min_quantity || 1}
                       step="any"
                       value={quantity}
                       onChange={(e) => setQuantity(e.target.value)}

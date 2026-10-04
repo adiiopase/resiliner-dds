@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { ADMIN_PIN_COOKIE, verifyAdminPinSessionToken } from "@/lib/adminPin";
 
 const adminPaths = ["/users", "/accounting"];
 
@@ -33,14 +34,18 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/documents") ||
     pathname.startsWith("/digital-docs") ||
-    pathname.startsWith("/pricing") ||
-    pathname.startsWith("/products") ||
-    pathname.startsWith("/nos-produits") ||
-    pathname.startsWith("/devis") ||
+    pathname.startsWith("/api-docs") ||
     pathname.startsWith("/billing") ||
     pathname.startsWith("/commande");
 
   const isAdminPage = adminPaths.some((path) => pathname.startsWith(path));
+  const normalizedEmail = user?.email?.toLowerCase();
+  const isAdminUser = Boolean(
+    user &&
+      (user.app_metadata?.role === "manager" ||
+        normalizedEmail === "adiiopase@gmail.com" ||
+        normalizedEmail === "adiopa@yahoo.fr"),
+  );
 
   if ((isProtected || isAdminPage) && !user) {
     const loginUrl = new URL("/login", request.url);
@@ -48,8 +53,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isAdminPage && user?.app_metadata?.role !== "manager") {
+  if (isAdminPage && !isAdminUser) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  const requiresAdminPin = isAdminPage ||
+    (normalizedEmail === "adiiopase@gmail.com" && pathname.startsWith("/dashboard"));
+
+  if (requiresAdminPin && !verifyAdminPinSessionToken(request.cookies.get(ADMIN_PIN_COOKIE)?.value)) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("next", pathname);
+    loginUrl.searchParams.set("requiresAdminPin", "1");
+    return NextResponse.redirect(loginUrl);
   }
 
   return response;
@@ -60,10 +75,7 @@ export const config = {
     "/dashboard/:path*",
     "/documents/:path*",
     "/digital-docs/:path*",
-    "/pricing/:path*",
-    "/products/:path*",
-    "/nos-produits/:path*",
-    "/devis/:path*",
+    "/api-docs/:path*",
     "/commande/:path*",
     "/users/:path*",
     "/billing/:path*",

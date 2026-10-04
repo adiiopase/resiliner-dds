@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -26,27 +26,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Utilisateur non connecté" }, { status: 401 });
   }
 
-  if (
-    !process.env.SMTP_HOST ||
-    !process.env.SMTP_USER ||
-    !process.env.SMTP_PASSWORD
-  ) {
+  if (!process.env.RESEND_API_KEY) {
     return NextResponse.json(
-      { sent: false, error: "SMTP non configuré dans .env.local" },
+      { sent: false, error: "RESEND_API_KEY non configuré dans .env.local" },
       { status: 503 }
     );
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT ?? 587),
-      secure: process.env.SMTP_SECURE === "true",
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
-    });
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? process.env.SMTP_USER,
+    await resend.emails.send({
+      from: process.env.RESEND_FROM || "onboarding@resend.dev",
       to: user.email,
       subject: "Votre quota Digital Docs Solutions est atteint",
       text: "Votre quota de stockage est atteint. Aucun nouvel upload ne sera accepté pendant la période de blocage prévue.",

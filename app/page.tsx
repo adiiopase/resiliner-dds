@@ -1,7 +1,5 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
+import HomeCarousel from "./HomeCarousel";
 
 export default function HomePage() {
   return (
@@ -63,17 +61,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Banner Section */}
-        <div className="container my-5 text-center">
-          <Image
-            src="/images/bannieredds.png"
-            alt="Digital Docs Solutions"
-            width={1200}
-            height={500}
-            className="img-fluid rounded shadow"
-            priority
-          />
-        </div>
+        <HomeCarousel />
 
         {/* Problème Section */}
         <section className="container my-5">

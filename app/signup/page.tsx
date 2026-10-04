@@ -8,6 +8,7 @@ export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,9 +19,22 @@ export default function SignupPage() {
     setSuccess("");
     setLoading(true);
 
+    const cleanEmail = email.trim();
+    if (!cleanEmail.includes("@")) {
+      setError("Veuillez saisir une adresse e-mail valide (ex: utilisateur@domaine.com).");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Le mot de passe doit comporter au moins 6 caractères.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
+      const { data, error } = await supabase.auth.signUp({
+        email: cleanEmail,
         password,
       });
 
@@ -29,10 +43,15 @@ export default function SignupPage() {
         return;
       }
 
-      setSuccess("Compte créé avec succès. Redirection vers la page de connexion...");
+      if (data?.user && !data?.session) {
+        setSuccess("Compte créé avec succès ! Un e-mail de confirmation vous a été envoyé si la vérification est requise. Vous pouvez vous connecter dès maintenant.");
+      } else {
+        setSuccess("Compte créé avec succès ! Redirection vers la connexion...");
+      }
+
       setTimeout(() => {
         router.push("/login");
-      }, 1500);
+      }, 2000);
     } catch {
       setError("Une erreur inattendue est survenue.");
     } finally {
@@ -41,66 +60,102 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <form
-        onSubmit={handleSignup}
-        className="bg-white p-8 rounded-xl shadow-md w-full max-w-md border border-slate-200"
-      >
+    <div className="flex items-center justify-center min-h-screen bg-slate-100 p-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
         <div className="text-center mb-6">
-          <a href="/" className="text-sm font-semibold text-blue-600 hover:underline">
-            ← Retour au site
+          <a href="/" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+            ← Retour au site vitrine
           </a>
-          <h1 className="text-2xl font-bold text-slate-900 mt-2">Créer un compte DDS</h1>
+          <div className="mt-4 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 text-2xl font-bold shadow-sm">
+            ✨
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 mt-3">Créer un compte DDS</h1>
           <p className="text-sm text-slate-500 mt-1">Rejoignez la plateforme Digital Docs Solutions</p>
         </div>
 
         {error && (
-          <p className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg mb-4 text-sm">
-            {error}
-          </p>
+          <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl mb-5 text-sm flex items-start gap-2">
+            <span className="font-bold text-base leading-none">⚠️</span>
+            <span>{error}</span>
+          </div>
         )}
 
         {success && (
-          <p className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-lg mb-4 text-sm">
-            {success}
-          </p>
+          <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-xl mb-5 text-sm flex items-start gap-2">
+            <span className="font-bold text-base leading-none">✅</span>
+            <span>{success}</span>
+          </div>
         )}
 
-        <label className="block mb-2 text-sm font-semibold text-slate-700">Email</label>
-        <input
-          type="email"
-          className="w-full p-3 border rounded-lg mb-4 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="votre.email@entreprise.com"
-          required
-        />
+        <form onSubmit={handleSignup} autoComplete="off">
+          <div className="mb-4">
+            <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
+              Adresse E-mail
+            </label>
+            <input
+              type="email"
+              autoComplete="off"
+              className="w-full p-3 border border-slate-300 rounded-xl bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ex: nom@entreprise.com"
+              required
+            />
+          </div>
 
-        <label className="block mb-2 text-sm font-semibold text-slate-700">Mot de passe</label>
-        <input
-          type="password"
-          className="w-full p-3 border rounded-lg mb-6 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Au moins 6 caractères"
-          required
-        />
+          <div className="mb-5">
+            <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
+              Mot de passe
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                className="w-full p-3 pr-10 border border-slate-300 rounded-xl bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Au moins 6 caractères"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 text-sm"
+                title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-700 text-white p-3 rounded-lg font-semibold hover:bg-blue-800 transition disabled:opacity-50"
-        >
-          {loading ? "Création en cours..." : "Créer un compte"}
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-xl font-bold transition shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Création en cours...
+              </>
+            ) : (
+              "Créer mon compte"
+            )}
+          </button>
+        </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Vous avez déjà un compte ?{" "}
-          <a href="/login" className="text-blue-600 font-semibold hover:underline">
+        <div className="mt-6 pt-5 border-t border-slate-200 text-center">
+          <p className="text-sm text-slate-600 mb-2">
+            Vous possédez déjà un compte DDS ?
+          </p>
+          <a
+            href="/login"
+            className="inline-block w-full py-2.5 px-4 rounded-xl border-2 border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition text-sm text-center"
+          >
             Se connecter
           </a>
-        </p>
-      </form>
+        </div>
+      </div>
     </div>
   );
 }

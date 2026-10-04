@@ -122,6 +122,25 @@ export default function UploadPage() {
         <p className="mt-2 text-slate-600">Importez vos fichiers pour indexation, OCR et archivage sécurisé.</p>
       </div>
 
+      {/* Mobile Scan Prompt Banner */}
+      <div className="rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-900 p-5 text-white shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="space-y-1 text-center sm:text-left">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-300">
+            En déplacement ?
+          </p>
+          <h3 className="text-base font-bold">Numérisez directement avec votre smartphone</h3>
+          <p className="text-xs text-slate-300">
+            Utilisez la caméra de votre mobile avec nos filtres OCR pour envoyer vos documents en direct.
+          </p>
+        </div>
+        <a
+          href="/documents/scan"
+          className="whitespace-nowrap rounded-xl bg-blue-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-400 transition shadow-sm"
+        >
+          📱 Ouvrir le scanner mobile →
+        </a>
+      </div>
+
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-6 rounded-lg bg-blue-50 p-4 text-sm text-slate-700">
           <p className="font-semibold">Quota utilisé</p>

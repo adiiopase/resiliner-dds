@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Resiliner DDS</string>
+    <string-array name="document_categories">
+        <item>Administratif</item>
+        <item>Facture</item>
+        <item>Devis</item>
+        <item>Contrat</item>
+        <item>Autre</item>
+    </string-array>
+</resources>

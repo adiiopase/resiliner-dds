@@ -1,0 +1,179 @@
+================================================================================
+          DIGITALDOCS SOLUTIONS - SUITE DE SOUVERAINETÉ DOCUMENTAIRE
+     DOCUMENTATION TECHNIQUE OCR • IA • CLOUD ON/OFF • API D'INTÉGRATION
+================================================================================
+Date : 17 Septembre 2026
+Projet : resiliner-dds (DigitalDocs Solutions)
+Auteur : Antigravity AI Assistant & Équipe Technique DigitalDocs Solutions
+Statut : OCR • CLASSIFICATION IA • CLOUD SOUVERAIN • API D'INTÉGRATION VALIDÉS
+
+================================================================================
+TABLE DES MATIÈRES
+================================================================================
+1. PRÉSENTATION & RÔLE DE L'API D'INTÉGRATION DANS DIGITALDOCS SOLUTIONS
+2. POURQUOI L'API EST INDISPENSABLE DANS UNE PLATEFORME OCR + IA
+3. FONCTIONNEMENT DE L'API DANS L'ÉCOSYSTÈME LOGICIEL
+4. ARCHITECTURE COMPLÈTE & CONNECTEURS (ERP, CRM, GED, WORKFLOWS)
+5. LE CONCEPT "CLOUD ON / ANTI-CHAMBRE / CLOUD OFF" (Air-Gap & CDR)
+6. SOUVERAINETÉ NUMÉRIQUE MULTI-ZONES (Afrique & International)
+7. MOTEUR OCR SOUVERAIN & IA DE CLASSIFICATION (22 Catégories)
+8. PROTOCOLE DE TEST & PORTAIL DÉVELOPPEUR EN DIRECT
+9. SYNTHÈSE DES FICHIERS & POINTS D'ENTRÉE DU SYSTÈME
+
+================================================================================
+1. PRÉSENTATION & RÔLE DE L'API D'INTÉGRATION
+================================================================================
+Une API (Application Programming Interface) est une interface qui permet à deux 
+systèmes informatiques de communiquer automatiquement entre eux.
+
+Dans DigitalDocs Solutions, l'API d'intégration permet à votre application d'envoyer 
+ou de recevoir des documents et des données extraites depuis n'importe quel 
+logiciel tiers (ERP, CRM, GED, boîtes e-mails, applications sur mesure), sans 
+aucune intervention humaine.
+
+================================================================================
+2. POURQUOI UNE API EST INDISPENSABLE DANS UNE PLATEFORME OCR + IA
+================================================================================
+L'API d'intégration remplit 4 missions fondamentales :
+
+✔️ 1. Envoyer un document à votre moteur OCR/IA :
+   Exemple : Un ERP ou un CRM envoie automatiquement une facture reçue en PDF 
+   à l'API → votre système l'analyse → renvoie immédiatement les données extraites.
+
+✔️ 2. Récupérer les données extraites de façon structurée :
+   L'API renvoie instantanément :
+   - Type de document (classification automatique par IA sur 22 catégories),
+   - Données clés (montants HT/TVA/TTC, date, fournisseur/client, numéro de BL, etc.),
+   - Statut du traitement et contrôle d'équilibre comptable.
+
+✔️ 3. Intégrer votre service dans n'importe quel logiciel du marché :
+   - ERP : SAP, Sage, Odoo, Microsoft Dynamics, Dolibarr
+   - CRM : Salesforce, HubSpot, Zoho CRM
+   - GED : Microsoft SharePoint, Alfresco, Nextcloud, Nuxeo
+   - Applications internes : Portails RH, Intranets bancaires, Logiciels métier
+
+✔️ 4. Automatiser les workflows métier de bout en bout :
+   Exemples concrets :
+   - Une facture reçue par e-mail est automatiquement poussée vers l'API 
+     → classée par l'IA → données extraites → injectée en comptabilité.
+   - Un contrat signé est envoyé à l'API → analysé → scellé par l'Anti-Chambre 
+     → archivé dans le Cloud sécurisé (Cloud ON) et répliqué dans le Cloud OFF.
+
+================================================================================
+3. COMMENT FONCTIONNE L'API DANS L'ÉCOSYSTÈME
+================================================================================
+
+1. LE LOGICIEL CLIENT ENVOIE UNE REQUÊTE :
+   Endpoint : POST /api/v1/document/analyse
+   Headers :
+     - X-API-Key: dds_live_sec_894123456789
+     - Content-Type: multipart/form-data (ou application/json avec base64)
+   Body :
+     - Le fichier PDF / image scannée
+     - Le type de traitement / langue souhaitée (ex: "fra+eng")
+
+2. L'API TRAITE LE DOCUMENT DE FAÇON SOUVERAINE :
+   - Passage dans le SAS sanitaire de l'Anti-Chambre (Désarmement CDR des scripts)
+   - Reconnaissance optique (OCR Avancé WebAssembly)
+   - Classification sémantique par IA (22 catégories)
+   - Extraction des entités métier (Fournisseur, SIRET, IBAN, Montants HT/TTC)
+   - Vérification de cohérence comptable (HT + TVA === TTC)
+   - Scellement cryptographique SHA-256 et stockage sécurisé Cloud ON / OFF
+
+3. L'API RENVOIE UNE RÉPONSE JSON INSTANTANÉE :
+   Exemple de réponse retournée par POST /api/v1/document/analyse :
+   {
+     "type document": "facture",
+     "fournisseur": "EDF",
+     "montant": 245.90,
+     "devise": "EUR",
+     "date": "2026-04-20",
+     "numéro facture": "F2026-4587",
+     "statut": "traitement ok",
+     "securite_cloud": {
+       "statut_airlock": "DESINFECTE_SAIN",
+       "empreinte_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "cloud_on": "Actif (AES-256)",
+       "cloud_off_miroir": "Eligible Archivage WORM Froid"
+     },
+     "donnees_comptables_extraites": {
+       "montant_ht": 204.92,
+       "taux_tva": 20.0,
+       "montant_tva": 40.98,
+       "montant_ttc": 245.90,
+       "equilibre_comptable": true
+     }
+   }
+
+================================================================================
+4. LE CONCEPT "CLOUD ON / ANTI-CHAMBRE / CLOUD OFF"
+================================================================================
+Face aux cyberattaques et rançongiciels, le système déploie 3 niveaux étanches :
+
+1. CLOUD ON (Production au Quotidien) :
+   - Environnement opérationnel chiffré AES-256.
+   - OCR, GED et consultations quotidiennes sécurisées par TLS 1.3.
+
+2. ANTI-CHAMBRE DE DÉCONTAMINATION (SAS Sanitaire CDR) :
+   - Zone tampon de quarantaine avant tout transfert vers le coffre froid.
+   - Rinçage des macros et désarmement actif des fichiers piégés.
+   - Interception immédiate des "échappées solitaires" et scellement SHA-256.
+
+3. CLOUD OFF (Coffre-Fort Miroir Déconnecté) :
+   - Stockage WORM (Write Once, Read Many) hermétique et isolé (Air-Gap).
+   - Inaltérable et immunisé contre les prises de contrôle réseau.
+   - Restauration Souveraine d'Urgence (PRA) en 1 clic.
+
+================================================================================
+5. RÉSIDENCE DES DONNÉES & SOUVERAINETÉ MULTI-ZONES
+================================================================================
+L'utilisateur peut assigner chaque document à un datacenter souverain :
+* 🇸🇳 SÉNÉGAL (Dakar / Diamniadio) : CDP Sénégal, Acte Uniforme OHADA.
+* 🇨🇮 CÔTE D'IVOIRE (Abidjan) : ARTCI Côte d'Ivoire, Zone UEMOA.
+* 🇲🇦 MAROC (Casablanca) : CNDP Maroc, Souveraineté Maghreb.
+* 🇪🇺 EUROPE (Paris / UE) : RGPD & SecNumCloud.
+* 🏢 ON-PREMISE PRIVÉ : Confinement total sur l'infrastructure interne du client.
+
+================================================================================
+6. MOTEUR OCR & IA DE CLASSIFICATION
+================================================================================
+- OCR WebAssembly Tesseract v7 100% hors-ligne (zéro fuite vers serveurs tiers).
+- IA de classification couvrant 22 catégories :
+  * Commercial : Factures, Devis, Bons de Commande, Bons de Livraison, Avoirs.
+  * Finance : Relevés bancaires, Avis d'imposition, Justificatifs de paiement.
+  * Juridique : Contrats, Statuts, Kbis, Baux, Jugements.
+  * RH : Fiches de paie, Contrats de travail, CVs, Attestations.
+  * Officiel : CNI, Passeports, Actes de naissance, Certificats.
+  * Santé : Ordonnances, Feuilles de soins, Attestations CPAM.
+
+================================================================================
+7. PROTOCOLE DE TEST DU SYSTÈME & API
+================================================================================
+
+TEST DE L'API REST & PORTAIL DÉVELOPPEUR :
+1. Accédez au Portail Développeur : http://localhost:3000/api-docs
+2. Testez l'appel en direct via le bouton "⚡ Tester le Healthcheck de l'API"
+3. Consultez les exemples de code prêts à copier en 5 langages (cURL, TS/Node, Python, PHP/Odoo, C#/SAP)
+
+TEST DU CLOUD ON / ANTI-CHAMBRE / CLOUD OFF :
+1. Accédez au Coffre-Fort : http://localhost:3000/cloud-vault
+2. Cliquez sur "🧪 Tester Rinçage" pour voir le désarmement sanitaire d'un flux
+3. Cliquez sur "🛑 Tester Blocage" pour simuler une échappée solitaire interceptée
+
+TEST DU STUDIO OCR & IA :
+1. Accédez au Studio OCR : http://localhost:3000/documents/ocr
+2. Chargez un fichier ou un exemple synthétique pour observer l'analyse en temps réel.
+
+================================================================================
+8. SYNTHÈSE DES FICHIERS CLÉS DU PROJET
+================================================================================
+* app/api/v1/document/analyse/route.ts : Point d'entrée de l'API d'Intégration d'Entreprise.
+* app/(app)/api-docs/page.tsx : Portail Développeur interactif avec exemples de code.
+* lib/ocrEngine.ts : Moteur OCR WebAssembly et extraction sémantique.
+* lib/documentClassifier.ts : Moteur d'IA de classification des 22 types métiers.
+* lib/decontaminationAirlock.ts : SAS Sanitaire, CDR, SHA-256 et Anti-Chambre.
+* lib/sovereignCloud.ts : Modèle multi-régions (Sénégal, RCI, Maroc, UE, On-Premise).
+* app/(app)/cloud-vault/page.tsx : Interface Cloud ON / Anti-Chambre / Cloud OFF.
+================================================================================
+FIN DU DOCUMENT
+================================================================================

@@ -1,0 +1,101 @@
+================================================================================
+     DIGITALDOCS SOLUTIONS - RAPPORT DES MODIFICATIONS & FONCTIONNALITES
+================================================================================
+Date : 10 Septembre 2026
+Projet : resiliner-dds (DigitalDocs Solutions)
+Auteur : Antigravity AI Assistant
+
+================================================================================
+1. SCAN DIRECT DEPUIS LE DASHBOARD ET LE SMARTPHONE
+================================================================================
+- Accès direct depuis le Dashboard (/dashboard) via le bouton :
+  "📱 Scanner depuis mon téléphone"
+- Studio de Scan Mobile (/documents/scan) :
+  * Capture en direct via la caméra du smartphone (WebRTC)
+  * Sélection caméra arrière / avant et activation flash/torche
+  * Mire de cadrage avec repères d'alignement
+  * Prétraitement Canvas : Filtre "OCR N&B Net" (binarisation haute netteté),
+    Filtre "Contraste Élevé", Rotation 90°
+  * Mode hors-ligne avec file d'attente locale et synchronisation automatique
+  * Transfert chiffré vers la base PostgreSQL et le Storage souverain
+
+================================================================================
+2. GESTION COMPLETE DU CYCLE DE VIE DES DOCUMENTS
+================================================================================
+Accessible sur le Dashboard (/dashboard) et dans "Mes documents" (/documents) :
+- 👁️ Visualiser : Prévisualisation haute résolution (Images & PDF) avec détails OCR
+- ⬇️ Télécharger : Téléchargement sécurisé via URL signée temporaire
+- 🔄 Remplacer / Ré-uploader : Remplacement in-place d'un document existant
+- 🗑️ Supprimer : Suppression physique et libération immédiate du quota de stockage
+  via la procédure RPC Supabase "release_document_bytes"
+- 📲 Passerelle QR Code : Affichage d'un QR code pour basculer en un geste du PC
+  au smartphone
+
+================================================================================
+3. TARIFICATION DU STOCKAGE & PAIEMENT INTERACTIF DE LICENCES
+================================================================================
+- Affichage transparent du tarif : 0,10 € TTC par Mo occupé
+- Calcul en temps réel du coût de stockage consommé : (Mo occupés × 0,10 € TTC)
+- Règle spécifique de quota :
+  * SEULS les scans mobiles sont autorisés à dépasser la limite de 2 Mo
+  * Les uploads de fichiers bureautiques standards restent régulés à 2 Mo
+- Modale interactive de paiement & surclassement (/dashboard et /documents) :
+  * Option 1 : Recharge au Mo (À l'usage) - 0,10 € / Mo
+  * Option 2 : Licence Mensuelle Pro - 9,90 € / mois (50 Mo inclus, Scans mobiles
+    illimités, OCR prioritaire)
+  * Option 3 : Licence Annuelle Entreprise - 99,00 € / an (1 Go inclus, 2 mois offerts)
+  * Redirection automatique vers le bon de commande pour validation contractuelle
+
+================================================================================
+4. REORGANISATION DE LA TABLE PRODUCTS & CHARGEMENT DYNAMIQUE
+================================================================================
+- Migration SQL créée :
+  supabase/migrations/202609100001_reorganize_products_and_storage_plans.sql
+
+- Liste structurée et réorganisée des produits en base de données :
+  1. STORAGE_MB : Recharge Stockage Souverain (au Mo) - 0,10 € / Mo
+  2. STORAGE_MONTHLY : Licence Mensuelle Pro - 9,90 € / mois
+  3. STORAGE_YEARLY : Licence Annuelle Entreprise - 99,00 € / an
+  4. MOBILE_SCAN : Application mobile de scan sur site - 2 000 € TTC
+  5. OCR : Reconnaissance optique de texte - 2 500 € TTC (0,05 € HT / page)
+  6. CLASSIFICATION : IA de classification de documents - 1 500 € TTC
+  7. CLOUD : Stockage Cloud Souverain & Chiffré - 3 500 € TTC (10 € HT / Go)
+  8. API : Connecteurs API REST d'intégration - 4 000 € TTC
+  9. ETATICIEL_GLOBAL : Suite globale État civil - 6 000 € TTC
+  10. ETATICIEL_NAISSANCE : Logiciel Naissance - 3 000 € TTC
+  11. ETATICIEL_DECES : Logiciel Décès - 3 000 € TTC
+  12. ETATICIEL_MARIAGE : Logiciel Mariage - 3 000 € TTC
+
+- Remplissage 100% dynamique dans l'application via lib/products.ts :
+  * Bon de commande (/commande) : liste déroulante dynamique avec calcul en direct
+    des prix, quantités minimales et unités
+  * Demande de devis (/devis) : liste dynamique des prestations
+  * Catalogue produits (/nos-produits) : affichage dynamique avec filtres par catégorie
+  * Grille tarifaire (/pricing) : rendu synchronisé avec la base de données
+
+================================================================================
+5. FICHIERS CLES DU PROJET MODIFIES ET CREES
+================================================================================
+- lib/products.ts (NOUVEAU - Helper dynamique & calculs de prix stockage)
+- lib/supabaseServer.ts (NOUVEAU - Auth JWT & Cookies)
+- supabase/migrations/202609100001_reorganize_products_and_storage_plans.sql (NOUVEAU)
+- app/(app)/dashboard/page.tsx (ENRICHI - Scan direct, métriques Mo, modale licences)
+- app/(app)/documents/scan/page.tsx (NOUVEAU - Studio WebRTC & filtres OCR)
+- app/(app)/documents/page.tsx (ENRICHI - Cycle de vie, prix Mo, QR code)
+- app/(app)/commande/page.tsx (ENRICHI - Catalogue dynamique depuis la BDD)
+- app/(app)/devis/page.tsx (ENRICHI - Produits dynamiques avec Suspense)
+- app/(app)/nos-produits/page.tsx (ENRICHI - Rendu dynamique et bannières)
+- app/pricing/page.tsx (ENRICHI - Grille tarifaire dynamique)
+- app/api/mobile-upload/route.ts (ENRICHI - Dépassement 2 Mo autorisé pour les scans)
+- app/api/documents/reupload/route.ts (NOUVEAU - Remplacement de document)
+- app/api/documents/[id]/route.ts (NOUVEAU - REST GET & DELETE)
+- app/(app)/api-docs/page.tsx (NOUVEAU - Documentation API REST Souveraine)
+- proxy.ts (ENRICHI - Protection des routes sécurisées)
+
+================================================================================
+6. RESULTATS DES TESTS ET COMPILATION
+================================================================================
+- Build Next.js 16.3.4 Turbopack : Réussi (Exit code 0)
+- Vérification TypeScript : 0 erreur
+- Toutes les 29 routes sont compilées et prêtes pour la production
+================================================================================

@@ -20,14 +20,20 @@ export default function UserNavigation() {
       <a href="/dashboard" className="block rounded px-3 py-2 hover:bg-blue-800">
         Dashboard
       </a>
-      <a href="/documents/upload" className="block rounded px-3 py-2 hover:bg-blue-800">
-        Upload de documents
+      <a href="/documents/scan" className="block rounded px-3 py-2 hover:bg-blue-800">
+        📱 Scanner mobile
       </a>
       <a href="/documents" className="block rounded px-3 py-2 hover:bg-blue-800">
-        Mes documents
+        📁 Mes documents
+      </a>
+      <a href="/documents/upload" className="block rounded px-3 py-2 hover:bg-blue-800">
+        📤 Upload de documents
       </a>
       <a href="/nos-produits" className="block rounded px-3 py-2 hover:bg-blue-800">
         Nos produits
+      </a>
+      <a href="/api-docs" className="block rounded px-3 py-2 hover:bg-blue-800">
+        ⚡ API Souveraine
       </a>
       <a href="/pricing" className="block rounded px-3 py-2 hover:bg-blue-800">
         Tarifs

@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 
 const priceByProduct: Record<string, string | undefined> = {
   ocr: process.env.STRIPE_PRICE_OCR,
+  "ocr-license": process.env.STRIPE_PRICE_OCR_LICENSE,
+  "scan-license": process.env.STRIPE_PRICE_SCAN_LICENSE,
+  "ia-license": process.env.STRIPE_PRICE_IA_LICENSE,
   signature: process.env.STRIPE_PRICE_SIGNATURE,
   partage: process.env.STRIPE_PRICE_PARTAGE,
   comptabilite: process.env.STRIPE_PRICE_COMPTABILITE,
