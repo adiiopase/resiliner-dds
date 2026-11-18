@@ -7,8 +7,8 @@ export async function getUserStorageUsage(userId: string) {
         .from("documents")
         .list(userId, { limit: 100 });
 
-    if (error) {
-        console.error("Erreur listage fichiers :", error);
+    if (error || !files) {
+        if (error) console.error("Erreur listage fichiers :", error);
         return 0;
     }
 

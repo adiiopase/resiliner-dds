@@ -60,10 +60,6 @@ export default function UserNavigation() {
           <span className="text-base">📁</span>
           <span>Mes documents</span>
         </Link>
-        <Link href="/cloud-vault" className={linkClass("/cloud-vault")}>
-          <span className="text-base">🔒</span>
-          <span>Cloud ON / Anti-Chambre / OFF</span>
-        </Link>
         <Link href="/documents/upload" className={linkClass("/documents/upload")}>
           <span className="text-base">📤</span>
           <span>Upload fichier</span>

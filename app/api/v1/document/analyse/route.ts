@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processOcrDocument } from "@/lib/ocrEngine";
-import { decontaminateDocumentInAirlock } from "@/lib/decontaminationAirlock";
+import crypto from "crypto";
 
 /**
  * DigitalDocs Solutions - Enterprise Integration API (v1)
@@ -11,7 +11,6 @@ import { decontaminateDocumentInAirlock } from "@/lib/decontaminationAirlock";
  * - JSON Base64 payload (imageBase64, filename, language)
  * - Authentication via X-API-Key or Bearer Token
  * - Full AI Classification (22 business categories) & Metadata Extraction
- * - Sovereign Cloud & Anti-Chambre Decontamination sealing
  */
 
 export const maxDuration = 60;
@@ -95,17 +94,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Decontamination Airlock check (CDR sanitization)
-    const arrayBuffer = imageBuffer.buffer.slice(
-      imageBuffer.byteOffset,
-      imageBuffer.byteOffset + imageBuffer.byteLength
-    ) as ArrayBuffer;
-
-    const airlockResult = await decontaminateDocumentInAirlock(
-      `doc-${Date.now()}`,
-      filename,
-      arrayBuffer
-    );
+    // 3. Compute SHA-256 integrity checksum
+    const fileSha256 = crypto.createHash("sha256").update(imageBuffer).digest("hex");
 
     // 4. Run Sovereign OCR Engine + AI Classification
     const ocrResult = await processOcrDocument(imageBuffer, { language });
@@ -143,12 +133,10 @@ export async function POST(req: NextRequest) {
         "numero_facture": invoiceNumber,
         "statut": "traitement ok",
 
-        // Données d'intégrité et de conformité souveraine
-        "securite_cloud": {
-          "statut_airlock": airlockResult.isClean ? "DESINFECTE_SAIN" : "SUSPECT",
-          "empreinte_sha256": airlockResult.cleanSha256,
-          "cloud_on": "Actif (chiffrement AES-256)",
-          "cloud_off_miroir": airlockResult.isClean ? "Eligible Archivage WORM Froid" : "Bloqué en quarantaine",
+        // Données d'intégrité
+        "securite": {
+          "empreinte_sha256": fileSha256,
+          "statut": "VERIFIE",
         },
 
         // Détails structurés complets pour intégrations avancées

@@ -39,7 +39,7 @@ function LoginForm() {
 
       if (error) {
         if (error.message.toLowerCase().includes("invalid login credentials")) {
-          setError("Vous devez créer un compte avant de vous connecter si vous n’êtes pas encore inscrit. Si vous avez déjà un compte, vérifiez votre adresse e-mail et votre mot de passe.");
+          setError("Identifiants incorrects. Vérifiez votre adresse e-mail et votre mot de passe.");
         } else if (error.message.toLowerCase().includes("email not confirmed")) {
           setError("Votre adresse e-mail n'a pas encore été confirmée. Veuillez cliquer sur le lien reçu par e-mail ou contacter l'administrateur.");
         } else {

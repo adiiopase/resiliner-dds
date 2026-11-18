@@ -300,7 +300,7 @@ export async function fetchDynamicProducts(): Promise<ProductItem[]> {
       return FALLBACK_PRODUCTS;
     }
 
-    return data.map((item) => ({
+    return data.map((item: any) => ({
       id: item.id || item.product_code.toLowerCase(),
       product_code: item.product_code,
       name: item.name,
