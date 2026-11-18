@@ -39,9 +39,9 @@ const securityHeaders = [
       script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://rkpjjwapbjommuhphscx.supabase.co;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
-      img-src 'self' blob: data: https://*.supabase.co https://api.qrserver.com https://images.unsplash.com https://*.stripe.com;
+      img-src 'self' blob: data: https://dds.digitds.cloud https://*.supabase.co https://api.qrserver.com https://images.unsplash.com https://*.stripe.com;
       media-src 'self' blob: data:;
-      connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://js.stripe.com https://api.qrserver.com;
+      connect-src 'self' https://dds.digitds.cloud https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://js.stripe.com https://api.qrserver.com;
       frame-src 'self' https://js.stripe.com https://hooks.stripe.com;
       object-src 'none';
       base-uri 'self';
@@ -54,6 +54,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "dds.digitds.cloud",
+      },
       {
         protocol: "https",
         hostname: "rkpjjwapbjommuhphscx.supabase.co",
