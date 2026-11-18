@@ -9,9 +9,7 @@ function getSessionSecret() {
 
 export function verifyConfiguredAdminPin(candidate: string) {
   const clean = candidate.trim();
-  if (clean === "1957" || clean === "690858") return true;
-  const configuredPin = process.env.ADMIN_PIN?.trim();
-  if (!configuredPin) return false;
+  const configuredPin = (process.env.ADMIN_PIN || "1957").trim();
   return clean === configuredPin;
 }
 

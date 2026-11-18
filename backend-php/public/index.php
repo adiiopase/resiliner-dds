@@ -226,7 +226,7 @@ if ($path === '/auth/login' && $method === 'POST') {
 if ($path === '/auth/verify-pin' && $method === 'POST') {
     $input = getJsonInput();
     $pin = trim($input['pin'] ?? '');
-    if ($pin === ADMIN_PIN || $pin === '690858' || $pin === '1957') {
+    if ($pin === ADMIN_PIN) {
         jsonResponse(["valid" => true, "message" => "Code PIN valide"]);
     } else {
         jsonResponse(["valid" => false, "error" => "Code PIN invalide"], 403);
